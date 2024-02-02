@@ -6,7 +6,7 @@ namespace DoctorAppointmentDemo.Service.Interfaces
     {
         Doctor Create(Doctor doctor, string format);
 
-        IEnumerable<Doctor> GetAll();
+        IEnumerable<Doctor> GetAll(string format);
 
         Doctor? Get(int id);
 

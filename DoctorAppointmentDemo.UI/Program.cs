@@ -19,7 +19,7 @@ namespace DoctorAppointmentDemo.UI
             while (true)
             {
                 string? respond;
-                Console.WriteLine("Choose your save format:\n" +
+                Console.WriteLine("Choose file format you will be working with:\n" +
                     "1 - XML\n" +
                     "2 - JSON\n" +
                     "Type \"0\" to quit.");
@@ -51,9 +51,9 @@ namespace DoctorAppointmentDemo.UI
                     Console.Clear();
                     continue;
                 }
-
+                
                 Console.WriteLine("Current doctors list: ");
-                var docs = _doctorService.GetAll();
+                var docs = _doctorService.GetAll(format);
 
                 foreach (var doc in docs)
                 {
@@ -72,12 +72,12 @@ namespace DoctorAppointmentDemo.UI
 
                 _doctorService.Create(newDoctor, format);
 
-                //Console.WriteLine("Updated doctors list: ");
-                //docs = _doctorService.GetAll();
-                //foreach (var doc in docs)
-                //{
-                //    Console.WriteLine(doc.Name);
-                //}
+                Console.WriteLine("Updated doctors list: ");
+                docs = _doctorService.GetAll(format);
+                foreach (var doc in docs)
+                {
+                    Console.WriteLine(doc.Name);
+                }
 
                 break;
             }

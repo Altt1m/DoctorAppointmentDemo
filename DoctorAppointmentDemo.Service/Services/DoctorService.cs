@@ -29,9 +29,9 @@ namespace DoctorAppointmentDemo.Service.Services
             return _doctorRepository.GetById(id);
         }
 
-        public IEnumerable<Doctor> GetAll()
+        public IEnumerable<Doctor> GetAll(string format)
         {
-            return _doctorRepository.GetAll();
+            return _doctorRepository.GetAll(format);
         }
 
         public Doctor Update(int id, Doctor doctor)

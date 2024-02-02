@@ -23,7 +23,7 @@ namespace DoctorAppointmentDemo.Data.Repositories
             }
             else if (format == "json")
             {
-                File.WriteAllText(JsonPath, JsonConvert.SerializeObject(GetAll().Append(source), Formatting.Indented));
+                File.WriteAllText(JsonPath, JsonConvert.SerializeObject(GetAll("json").Append(source), Formatting.Indented));
             }
             
             SaveLastId();
@@ -36,32 +36,41 @@ namespace DoctorAppointmentDemo.Data.Repositories
             if (GetById(id) is null)
                 return false;
 
-            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(GetAll().Where(x => x.Id != id), Formatting.Indented));
+            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(GetAll("json").Where(x => x.Id != id), Formatting.Indented));
             
             return true;
         }
 
-        public IEnumerable<TSource> GetAll()
+        public IEnumerable<TSource> GetAll(string format)
         {
-            if(!File.Exists(JsonPath))
+            if (format == "xml")
             {
-                File.WriteAllText(JsonPath, "[]");
+                return GetAllFromXml();
+            }
+            else if (format == "json")
+            {
+                if (!File.Exists(JsonPath))
+                {
+                    File.WriteAllText(JsonPath, "[]");
+                }
+
+                var json = File.ReadAllText(JsonPath);
+
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    File.WriteAllText(JsonPath, "[]");
+                    json = "[]";
+                }
+
+                return JsonConvert.DeserializeObject<List<TSource>>(json)!;
             }
 
-            var json = File.ReadAllText(JsonPath);
-
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                File.WriteAllText(JsonPath, "[]");
-                json = "[]";
-            }
-
-            return JsonConvert.DeserializeObject<List<TSource>>(json)!;
+            return new List<TSource>();
         }
 
         public TSource? GetById(int id)
         {
-            return GetAll().FirstOrDefault(x => x.Id == id);
+            return GetAll("json").FirstOrDefault(x => x.Id == id);
         }
 
         public TSource Update(int id, TSource source)
@@ -69,10 +78,12 @@ namespace DoctorAppointmentDemo.Data.Repositories
             source.UpdatedAt = DateTime.Now;
             source.Id = id;
 
-            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(GetAll().Select(x => x.Id == id ? source : x), Formatting.Indented));
+            File.WriteAllText(JsonPath, JsonConvert.SerializeObject(GetAll("json").Select(x => x.Id == id ? source : x), Formatting.Indented));
 
             return source;
         }
+
+        public abstract IEnumerable<TSource> GetAllFromXml();
 
         public abstract void CreateAsXml(TSource source);
 
